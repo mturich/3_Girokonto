@@ -7,12 +7,13 @@ from datetime import datetime, date
 import errno
 import PyPDF2
 import re
+import xlsxwriter
 
 # initialiation
 transfers = []
 match = []
 
-datapath = "Dir of the pdf"
+#datapath = "Dir of the ING pdf"
 
 try:
     with open(datapath, "rb") as pdf:
@@ -52,6 +53,10 @@ df["betrag"] = df["betrag"].astype('float')
 
 month_first = df.loc[1,"datum"].month
 month_last = df.loc[len(df.datum)-1,"datum"].month
+
+# exports excel file
+with pd.ExcelWriter("Kontostand_"+str(month_first)+"bis"+str(month_last)+'.xlsx', engine='xlsxwriter',date_format='yyyy-MM-dd') as writer:
+      df.to_excel(writer, sheet_name="Kontostand_"+str(month_first)+"bis_"+str(month_last))
 
 # visualise the data
 df_grouped = df.groupby("anlass").sum()
